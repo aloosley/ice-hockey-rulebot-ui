@@ -6,6 +6,8 @@ import requests
 import streamlit as st
 from requests import Response, HTTPError
 
+
+VERSION = "0.0.2"
 TITLE = "🏒💬 IIHF (Ice-Hockey) Rulebot"
 URL = "https://ice-hockey-rulebot-d4e727a4fff5.herokuapp.com"
 CHAT_ENDPOINT = "context/chat/completions"
@@ -27,11 +29,19 @@ with st.sidebar:
         if len(api_key):
             st.success('Proceed to entering your prompt message! If the API key is wrong, an error will occur.', icon='👉')
 
-    st.subheader('Parameters (currently disabled)')
-    temperature = st.sidebar.slider('temperature', min_value=0.01, max_value=5.0, value=0.1, step=0.01)
-    top_p = st.sidebar.slider('top_p', min_value=0.01, max_value=1.0, value=0.9, step=0.01)
-    max_length = st.sidebar.slider('max_length', min_value=32, max_value=128, value=120, step=8)
-    st.markdown('📖 Learn how to build this app in this [blog](https://blog.streamlit.io/how-to-build-a-llama-2-chatbot/)!')
+    st.markdown(f"v{VERSION}")
+
+    st.markdown(
+        f"""
+        ## Information
+        
+        This app is currently meant for demonstrative purposes only. 
+        Keep in mind that each prompt costs money. Please limit unnecessary usage. 
+        
+        If you are interested in having a faster, more accurate rulebot, 
+        contact [Alex Loosley](https://www.linkedin.com/in/alex-loosley-279b7649/).
+        """
+    )
 
 # Store LLM generated responses
 if "messages" not in st.session_state.keys():
