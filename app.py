@@ -7,14 +7,20 @@ import streamlit as st
 from requests import Response, HTTPError
 
 
-VERSION = "0.0.2"
+VERSION = "0.0.3"
 TITLE = "🏒💬 IIHF (Ice-Hockey) Rulebot"
 URL = "https://ice-hockey-rulebot-d4e727a4fff5.herokuapp.com"
 CHAT_ENDPOINT = "context/chat/completions"
+INITIAL_MESSAGE = f"How can I assist you in understanding the IIHF 2023/24 rulebook?"
 
 
 # App title
 st.set_page_config(page_title=TITLE)
+
+
+def clear_chat_history():
+    st.session_state.messages = [{"role": "assistant", "content": "How may I assist you today?"}]
+
 
 # Replicate Credentials
 api_key: str
@@ -29,24 +35,24 @@ with st.sidebar:
         if len(api_key):
             st.success('Proceed to entering your prompt message! If the API key is wrong, an error will occur.', icon='👉')
 
-    st.markdown(f"v{VERSION}")
-
+    st.button('Clear Chat History', on_click=clear_chat_history)
     st.markdown(
         f"""
-        ## Information
+        This app is currently meant for demonstrative purposes only. Please limit your usage 
+        (each prompt costs money). 
         
-        This app is currently meant for demonstrative purposes only. 
-        Keep in mind that each prompt costs money. Please limit unnecessary usage. 
+        If you have questions or want to see a faster more accurate rulebot, please contact us:
+        * [Dr. Alex Loosley](https://www.linkedin.com/in/alex-loosley-279b7649/)
+        * [Lina Palomo](https://www.linkedin.com/in/lina-palomo/). 
         
-        If you are interested in having a faster, more accurate rulebot, 
-        contact [Alex Loosley](https://www.linkedin.com/in/alex-loosley-279b7649/).
+        v{VERSION}
         """
     )
 
 # Store LLM generated responses
 if "messages" not in st.session_state.keys():
     st.session_state.messages = [
-        {"role": "assistant", "content": "How can I assist you in understanding the IIHF 2023/24 rulebook?"}
+        {"role": "assistant", "content": INITIAL_MESSAGE}
     ]
 
 # Display or clear chat messages
@@ -54,9 +60,6 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.write(message["content"])
 
-def clear_chat_history():
-    st.session_state.messages = [{"role": "assistant", "content": "How may I assist you today?"}]
-st.sidebar.button('Clear Chat History', on_click=clear_chat_history)
 
 # Function for generating LLaMA2 response. Refactored from https://github.com/a16z-infra/llama2-chatbot
 def pull_response(prompt_input: str) -> Response:
