@@ -7,7 +7,7 @@ import streamlit as st
 from requests import Response, HTTPError
 
 
-VERSION = "0.0.3"
+VERSION = "0.0.4"
 TITLE = "🏒💬 IIHF (Ice-Hockey) Rulebot"
 URL = "https://ice-hockey-rulebot-d4e727a4fff5.herokuapp.com"
 CHAT_ENDPOINT = "context/chat/completions"
@@ -19,7 +19,7 @@ st.set_page_config(page_title=TITLE)
 
 
 def clear_chat_history():
-    st.session_state.messages = [{"role": "assistant", "content": "How may I assist you today?"}]
+    st.session_state.messages = [{"role": "assistant", "content": INITIAL_MESSAGE}]
 
 
 # Replicate Credentials
@@ -42,8 +42,8 @@ with st.sidebar:
         (each prompt costs money). 
         
         If you have questions or want to see a faster more accurate rulebot, please contact us:
-        * [Dr. Alex Loosley](https://www.linkedin.com/in/alex-loosley-279b7649/)
-        * [Lina Palomo](https://www.linkedin.com/in/lina-palomo/). 
+        * [Dr. Alex Loosley](https://www.linkedin.com/in/alex-loosley/)
+        * [Lina Palomo](https://www.linkedin.com/in/lina-palomo/)
         
         v{VERSION}
         """
@@ -78,7 +78,7 @@ def pull_response(prompt_input: str) -> Response:
             messages=[
                 dict(
                     role="user",
-                    content=prompt_input,
+                    content=string_dialogue + "Assistant: ",
                 )
             ],
             stream=True,
