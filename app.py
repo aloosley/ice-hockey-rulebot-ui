@@ -9,8 +9,8 @@ from requests import Response, HTTPError
 
 VERSION = "0.1.0"
 TITLE = "🏒💬 IIHF (Ice-Hockey) Rulebot"
-# URL = "https://ice-hockey-rulebot-d4e727a4fff5.herokuapp.com"
-URL = "http://localhost:8000"
+URL = "https://ice-hockey-rulebot-d4e727a4fff5.herokuapp.com"
+# URL = "http://localhost:8000"
 CHAT_ENDPOINT = "context/chat/completions"
 INITIAL_MESSAGE = f"How can I assist you in understanding the IIHF 2023/24 rulebook?"
 
