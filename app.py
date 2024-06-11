@@ -7,7 +7,7 @@ import streamlit as st
 from requests import Response, HTTPError
 
 
-VERSION = "0.1.0"
+VERSION = "0.5.0"
 TITLE = "🏒💬 IIHF (Ice-Hockey) Rulebot"
 URL = "https://ice-hockey-rulebot-d4e727a4fff5.herokuapp.com"
 # URL = "http://localhost:8000"
@@ -27,7 +27,7 @@ def clear_chat_history():
 api_key: str
 with st.sidebar:
     st.title(TITLE)
-    st.write('This Rulebot attempts to answer your questions based on the 2023/24 IIHF rulebook.')
+    st.write("This Rulebot attempts to answer your questions based on the 2023/24 IIHF rulebook (here's an [example](app/static/english-german-example.png)).")
     if 'API_KEY' in st.secrets:
         st.success('API key already provided!', icon='✅')
         api_key = st.secrets['API_KEY']
