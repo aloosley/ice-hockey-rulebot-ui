@@ -22,7 +22,10 @@ def clear_chat_history():
 api_key: str
 with st.sidebar:
     st.title(TITLE)
-    st.write("This Rulebot attempts to answer your questions based on the 2023/24 IIHF rulebook (here's an [example](app/static/english-german-goalie-puck-throw-example.png)).")
+    st.write(
+        "This Rulebot attempts to answer your questions based on the 2023/24 IIHF rulebook "
+        "(here's an [example](https://storage.googleapis.com/icehockey-rulebot/examples/english-german-goalie-puck-throw-example.png))."
+    )
     if 'API_KEY' in st.secrets:
         st.success('API key already provided!', icon='✅')
         api_key = st.secrets['API_KEY']
