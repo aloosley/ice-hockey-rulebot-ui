@@ -1,18 +1,13 @@
-import json
-from json import JSONDecodeError
-from typing import Any, Optional
-
 import requests
 import streamlit as st
-from requests import Response, HTTPError
+from requests import Response
 
-
-VERSION = "0.5.1"
+VERSION = "0.5.2"
 TITLE = "🏒💬 IIHF (Ice-Hockey) Rulebot"
 URL = "https://ice-hockey-rulebot-d4e727a4fff5.herokuapp.com"
 # URL = "http://localhost:8000"
 CHAT_ENDPOINT = "context/chat/completions"
-INITIAL_MESSAGE = f"How can I assist you in understanding the IIHF 2023/24 rulebook?"
+INITIAL_MESSAGE = f"I am ready to assist you in understanding the IIHF 2023/24 rulebook!"
 
 
 # App title
@@ -75,7 +70,7 @@ def pull_response(query: str) -> Response:
 
 
 # User-provided query
-if query := st.chat_input(disabled=not api_key):
+if query := st.chat_input(placeholder="Can the goalie throw the puck?", disabled=not api_key):
     st.session_state.messages.append({"role": "user", "content": query})
     with st.chat_message("user"):
         st.write(query)
