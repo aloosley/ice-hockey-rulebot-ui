@@ -2,7 +2,7 @@ import requests
 import streamlit as st
 from requests import Response
 
-VERSION = "0.6.0"
+VERSION = "0.6.1"
 TITLE = "🏒💬 IIHF (Ice-Hockey) Rulebot"
 URL = "https://ice-hockey-rulebot-d4e727a4fff5.herokuapp.com"
 # URL = "http://localhost:8000"
@@ -24,7 +24,7 @@ with st.sidebar:
     st.title(TITLE)
     st.write(
         "This Rulebot attempts to answer your questions based on the 2023/24 IIHF rulebook "
-        "(here's an [example](https://storage.googleapis.com/icehockey-rulebot/examples/english-german-goalie-puck-throw-example.png))."
+        "(here's a [demo](https://www.loom.com/share/5e5bd5ca9fc94a1ebad15825e3e81cad?sid=0975fa10-e387-4457-9376-9ddf08a0d909))."
     )
     if 'API_KEY' in st.secrets:
         st.success('API key already provided!', icon='✅')
@@ -40,7 +40,7 @@ with st.sidebar:
         This app is currently meant for demonstrative purposes only. Please limit your usage 
         (each query costs money). 
         
-        If you have questions or want to see a faster more accurate rulebot, please contact us:
+        For questions and requests, please contact us:
         * [Dr. Alex Loosley](https://www.linkedin.com/in/alex-loosley/)
         * [Lina Palomo](https://www.linkedin.com/in/lina-palomo/)
         
