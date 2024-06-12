@@ -2,7 +2,7 @@ import requests
 import streamlit as st
 from requests import Response
 
-VERSION = "0.5.2"
+VERSION = "0.6.0"
 TITLE = "🏒💬 IIHF (Ice-Hockey) Rulebot"
 URL = "https://ice-hockey-rulebot-d4e727a4fff5.herokuapp.com"
 # URL = "http://localhost:8000"
@@ -48,6 +48,17 @@ with st.sidebar:
         """
     )
 
+    llm_model = st.selectbox(
+        label="Choose an LLM model",
+        options=("gpt-4-turbo", "gpt-4o-2024-05-13"),
+        index=0,
+    )
+    top_k_rules = st.select_slider(
+        label="Number of rules matches to interpret",
+        options=(4,5,6),
+        value=5
+    )
+
 # Store LLM generated responses
 if "messages" not in st.session_state.keys():
     st.session_state.messages = [
@@ -68,6 +79,8 @@ def pull_response(query: str) -> Response:
         headers=dict(access_token=api_key),
         params=dict(
             query=query,
+            llm_model=llm_model,
+            top_k_rules=top_k_rules,
         ),
     )
 
