@@ -56,7 +56,7 @@ with st.sidebar:
         label="Choose an LLM model",
         options=("gpt-4-turbo-2024-04-09", "gpt-4o-2024-05-13", "gpt-3.5-turbo-0125"),
         index=0,
-        help="Choose an LLM (gpt4 models cost more than 3.5 models but produces better results)"
+        help="Choose an LLM (gpt4 models produce better results but cost more than 3.5 models)"
     )
     top_k_rules = st.select_slider(
         label="Number of rules matches to interpret",
