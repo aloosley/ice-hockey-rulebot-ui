@@ -2,7 +2,7 @@ import requests
 import streamlit as st
 from requests import Response
 
-VERSION = "0.6.1"
+VERSION = "0.6.2"
 TITLE = "🏒💬 IIHF (Ice-Hockey) Rulebot"
 URL = "https://ice-hockey-rulebot-d4e727a4fff5.herokuapp.com"
 # URL = "http://localhost:8000"
@@ -30,7 +30,11 @@ with st.sidebar:
         st.success('API key already provided!', icon='✅')
         api_key = st.secrets['API_KEY']
     else:
-        api_key = st.text_input('Enter the Rulebot API key:', type='password')
+        api_key = st.text_input(
+            'Enter the Rulebot API key:',
+            type='password',
+            help="🔑 An API key is required to try the Ice Hockey Rule Bot 🔑"
+        )
         if len(api_key):
             st.success('Proceed to entering your query message! If the API key is wrong, an error will occur.', icon='👉')
 
@@ -50,13 +54,19 @@ with st.sidebar:
 
     llm_model = st.selectbox(
         label="Choose an LLM model",
-        options=("gpt-4-turbo", "gpt-4o-2024-05-13"),
+        options=("gpt-4-turbo-2024-04-09", "gpt-4o-2024-05-13", "gpt-3.5-turbo-0125"),
         index=0,
+        help="Choose an LLM (gpt4 models cost more than 3.5 models but produces better results)"
     )
     top_k_rules = st.select_slider(
         label="Number of rules matches to interpret",
         options=(4,5,6),
-        value=5
+        value=5,
+        help=(
+            "Lowering the number of rule matches means less matches for the LLM to read through (cheaper) - "
+            "unless the question is highly complex, usually 4 or 5 rule matches from our rule retrieval system "
+            "provides enough context for a good answer."
+        )
     )
 
 # Store LLM generated responses
