@@ -2,7 +2,7 @@ import requests
 import streamlit as st
 from requests import Response
 
-VERSION = "0.6.2"
+VERSION = "0.7.0"
 TITLE = "🏒💬 IIHF (Ice-Hockey) Rulebot"
 URL = "https://ice-hockey-rulebot-d4e727a4fff5.herokuapp.com"
 # URL = "http://localhost:8000"
