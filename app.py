@@ -1,8 +1,10 @@
+from typing import Any
+
 import requests
 import streamlit as st
 from requests import Response
 
-VERSION = "0.6.2"
+VERSION = "0.8.0"
 TITLE = "🏒💬 IIHF (Ice-Hockey) Rulebot"
 URL = "https://ice-hockey-rulebot-d4e727a4fff5.herokuapp.com"
 # URL = "http://localhost:8000"
@@ -52,11 +54,19 @@ with st.sidebar:
         """
     )
 
+    show_retrieved_rules: bool = st.checkbox(
+        label="Show retrieved rules", value=False,
+        help=(
+            "Response will show rules that semantic search found potentially relevant (-QA tags indicate "
+            "[Situation Book](https://blob.iihf.com/iihf-media/iihfmvc/media/downloads/officiating%20files/situation%20handbook/230705_iihf_sitiuation_hb_2023_24_v4_5.pdf) "
+            "entries)"
+        )
+    )
     llm_model = st.selectbox(
         label="Choose an LLM model",
         options=("gpt-4-turbo-2024-04-09", "gpt-4o-2024-05-13", "gpt-3.5-turbo-0125"),
         index=0,
-        help="Choose an LLM (gpt4 models produce better results but cost more than 3.5 models)"
+        help="Choose an LLM (gpt-4x models generally produce better results than gpt-3x models, but cost more)"
     )
     top_k_rules = st.select_slider(
         label="Number of rules matches to interpret",
@@ -95,6 +105,32 @@ def pull_response(query: str) -> Response:
     )
 
 
+def format_rule_records(records: list[dict[str, Any]]) -> str:
+    output = ""
+    for key, record in records.items():
+        output += (
+            f"* **Rule {key}. {record['''('title', '')''']}** (score={record['''('score', 'sum')''']:.2f}, "
+            f"subsections=[{', '.join(record['''('chunk_id', 'unique')'''])}]) \n"
+        )
+    return output.strip()
+
+
+def _parse_retrieved_rules(chat_completion_response: Response) -> str:
+    return format_rule_records(chat_completion_response.json()["rule_matches_df"])
+
+
+def parse_response(chat_completion_response: Response, show_retrieved_rules: bool) -> str:
+    relevant_rules = ""
+    if show_retrieved_rules:
+        relevant_rules = "*Rules Retrieved for Analysis:*\n" + _parse_retrieved_rules(chat_completion_response) + "\n---\n"
+
+    return (
+        relevant_rules +
+        "*Bot Response:* \n\n" +
+        chat_completion_response.json()["content"]
+    )
+
+
 # User-provided query
 if query := st.chat_input(placeholder="Can the goalie throw the puck?", disabled=not api_key):
     st.session_state.messages.append({"role": "user", "content": query})
@@ -104,13 +140,14 @@ if query := st.chat_input(placeholder="Can the goalie throw the puck?", disabled
 
 # Generate a new response if last message is not from assistant
 if st.session_state.messages[-1]["role"] != "assistant":
-    with (st.chat_message("assistant")):
+    with ((st.chat_message("assistant"))):
         with st.spinner("Thinking..."):
             chat_completion_response: Response = pull_response(query)
             placeholder = st.empty()
 
+            full_response: str
             if chat_completion_response.status_code == 200:
-                full_response = chat_completion_response.json()["content"]
+                full_response = parse_response(chat_completion_response, show_retrieved_rules)
             elif chat_completion_response.status_code == 404:
                 full_response = (
                     "It looks like the Chat Server is currently offline. Try again later or contact Alex Loosley."
