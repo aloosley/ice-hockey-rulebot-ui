@@ -1,11 +1,13 @@
+from typing import Any
+
 import requests
 import streamlit as st
 from requests import Response
 
 VERSION = "0.7.0"
 TITLE = "🏒💬 IIHF (Ice-Hockey) Rulebot"
-URL = "https://ice-hockey-rulebot-d4e727a4fff5.herokuapp.com"
-# URL = "http://localhost:8000"
+# URL = "https://ice-hockey-rulebot-d4e727a4fff5.herokuapp.com"
+URL = "http://localhost:8000"
 CHAT_ENDPOINT = "context/chat/completions"
 INITIAL_MESSAGE = f"I am ready to assist you in understanding the IIHF 2023/24 rulebook!"
 
@@ -52,6 +54,7 @@ with st.sidebar:
         """
     )
 
+    show_retrieved_rules: bool = st.checkbox(label="Show retrieved rules", value=False, help="Show potentially relevant rules that were retrieved for analysis by the bot.")
     llm_model = st.selectbox(
         label="Choose an LLM model",
         options=("gpt-4-turbo-2024-04-09", "gpt-4o-2024-05-13", "gpt-3.5-turbo-0125"),
@@ -95,6 +98,28 @@ def pull_response(query: str) -> Response:
     )
 
 
+def format_rule_records(records: list[dict[str, Any]]) -> str:
+    output = ""
+    for key, record in records.items():
+        output += f"* Rule {key}. {record['''('title', '')''']} ({record['''('score', 'sum')''']}): [{', '.join(record['''('chunk_id', 'unique')'''])}] \n"
+    return output.strip()
+
+
+def parse_response(chat_completion_response: Response, show_retrieved_rules: bool) -> str:
+    relevant_rules = ""
+    if show_retrieved_rules:
+        relevant_rules = "Retrieved Rules (Rules the bot considered):\n" + _parse_retrieved_rules(chat_completion_response) + "\n\n"
+
+    return (
+        relevant_rules +
+        chat_completion_response.json()["content"]
+    )
+
+
+def _parse_retrieved_rules(chat_completion_response: Response) -> str:
+    return format_rule_records(chat_completion_response.json()["rule_matches_df"])
+
+
 # User-provided query
 if query := st.chat_input(placeholder="Can the goalie throw the puck?", disabled=not api_key):
     st.session_state.messages.append({"role": "user", "content": query})
@@ -104,13 +129,14 @@ if query := st.chat_input(placeholder="Can the goalie throw the puck?", disabled
 
 # Generate a new response if last message is not from assistant
 if st.session_state.messages[-1]["role"] != "assistant":
-    with (st.chat_message("assistant")):
+    with ((st.chat_message("assistant"))):
         with st.spinner("Thinking..."):
             chat_completion_response: Response = pull_response(query)
             placeholder = st.empty()
 
+            full_response: str
             if chat_completion_response.status_code == 200:
-                full_response = chat_completion_response.json()["content"]
+                full_response = parse_response(chat_completion_response, show_retrieved_rules)
             elif chat_completion_response.status_code == 404:
                 full_response = (
                     "It looks like the Chat Server is currently offline. Try again later or contact Alex Loosley."
