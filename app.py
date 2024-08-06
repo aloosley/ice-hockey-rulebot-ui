@@ -6,8 +6,8 @@ from requests import Response
 
 VERSION = "0.7.0"
 TITLE = "🏒💬 IIHF (Ice-Hockey) Rulebot"
-# URL = "https://ice-hockey-rulebot-d4e727a4fff5.herokuapp.com"
-URL = "http://localhost:8000"
+URL = "https://ice-hockey-rulebot-d4e727a4fff5.herokuapp.com"
+# URL = "http://localhost:8000"
 CHAT_ENDPOINT = "context/chat/completions"
 INITIAL_MESSAGE = f"I am ready to assist you in understanding the IIHF 2023/24 rulebook!"
 
@@ -54,12 +54,19 @@ with st.sidebar:
         """
     )
 
-    show_retrieved_rules: bool = st.checkbox(label="Show retrieved rules", value=False, help="Show potentially relevant rules that were retrieved for analysis by the bot.")
+    show_retrieved_rules: bool = st.checkbox(
+        label="Show retrieved rules", value=False,
+        help=(
+            "Response will show rules that semantic search found potentially relevant (-QA tags indicate "
+            "[Situation Book](https://blob.iihf.com/iihf-media/iihfmvc/media/downloads/officiating%20files/situation%20handbook/230705_iihf_sitiuation_hb_2023_24_v4_5.pdf) "
+            "entries)"
+        )
+    )
     llm_model = st.selectbox(
         label="Choose an LLM model",
         options=("gpt-4-turbo-2024-04-09", "gpt-4o-2024-05-13", "gpt-3.5-turbo-0125"),
         index=0,
-        help="Choose an LLM (gpt4 models produce better results but cost more than 3.5 models)"
+        help="Choose an LLM (gpt-4x models generally produce better results than gpt-3x models, but cost more)"
     )
     top_k_rules = st.select_slider(
         label="Number of rules matches to interpret",
@@ -101,23 +108,27 @@ def pull_response(query: str) -> Response:
 def format_rule_records(records: list[dict[str, Any]]) -> str:
     output = ""
     for key, record in records.items():
-        output += f"* Rule {key}. {record['''('title', '')''']} ({record['''('score', 'sum')''']}): [{', '.join(record['''('chunk_id', 'unique')'''])}] \n"
+        output += (
+            f"* **Rule {key}. {record['''('title', '')''']}** (score={record['''('score', 'sum')''']:.2f}, "
+            f"subsections=[{', '.join(record['''('chunk_id', 'unique')'''])}]) \n"
+        )
     return output.strip()
+
+
+def _parse_retrieved_rules(chat_completion_response: Response) -> str:
+    return format_rule_records(chat_completion_response.json()["rule_matches_df"])
 
 
 def parse_response(chat_completion_response: Response, show_retrieved_rules: bool) -> str:
     relevant_rules = ""
     if show_retrieved_rules:
-        relevant_rules = "Retrieved Rules (Rules the bot considered):\n" + _parse_retrieved_rules(chat_completion_response) + "\n\n"
+        relevant_rules = "*Rules Retrieved for Analysis:*\n" + _parse_retrieved_rules(chat_completion_response) + "\n---\n"
 
     return (
         relevant_rules +
+        "*Bot Response:* \n\n" +
         chat_completion_response.json()["content"]
     )
-
-
-def _parse_retrieved_rules(chat_completion_response: Response) -> str:
-    return format_rule_records(chat_completion_response.json()["rule_matches_df"])
 
 
 # User-provided query
