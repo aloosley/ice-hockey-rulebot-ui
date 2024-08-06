@@ -4,12 +4,12 @@ import requests
 import streamlit as st
 from requests import Response
 
-VERSION = "0.8.0"
+VERSION = "0.8.1"
 TITLE = "🏒💬 IIHF (Ice-Hockey) Rulebot"
 URL = "https://ice-hockey-rulebot-d4e727a4fff5.herokuapp.com"
 # URL = "http://localhost:8000"
 CHAT_ENDPOINT = "context/chat/completions"
-INITIAL_MESSAGE = f"I am ready to assist you in understanding the IIHF 2023/24 rulebook!"
+INITIAL_MESSAGE = f"I am ready to assist you in understanding the IIHF 2023/24 rule- and situation books!"
 
 
 # App title
@@ -25,7 +25,7 @@ api_key: str
 with st.sidebar:
     st.title(TITLE)
     st.write(
-        "This Rulebot attempts to answer your questions based on the 2023/24 IIHF rulebook "
+        "This Rulebot attempts to answer your questions based on the 2023/24 IIHF rule- and situation books "
         "(here's a [demo](https://www.loom.com/share/5e5bd5ca9fc94a1ebad15825e3e81cad?sid=0975fa10-e387-4457-9376-9ddf08a0d909))."
     )
     if 'API_KEY' in st.secrets:
@@ -49,6 +49,7 @@ with st.sidebar:
         For questions and requests, please contact us:
         * [Dr. Alex Loosley](https://www.linkedin.com/in/alex-loosley/)
         * [Lina Palomo](https://www.linkedin.com/in/lina-palomo/)
+        * [Stefan Schusser](https://www.linkedin.com/in/stefan-schusser/)
         
         v{VERSION}
         """
