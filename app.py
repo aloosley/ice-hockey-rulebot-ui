@@ -68,12 +68,12 @@ with st.sidebar:
         options=(
             "gpt-4o-2024-08-06",
             "gpt-4o-mini-2024-07-18",
-            "o1-preview-2024-09-12",
-            "o1-mini-2024-09-12",
+            # "o1-preview-2024-09-12",  # Not available yet in my tier
+            # "o1-mini-2024-09-12",  # Not available yet in my tier
             "gpt-4-turbo-2024-04-09",
         ),
         index=0,
-        help="Choose an LLM (gpt-4o-mini models are the most cost efficient and fast)"
+        help="Choose an LLM (mini models are quicker and cheaper to use, but their results may not be as reliable)"
     )
     top_k_rules = st.select_slider(
         label="Number of rules matches to interpret",
