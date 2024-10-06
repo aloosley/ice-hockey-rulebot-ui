@@ -4,11 +4,11 @@ import requests
 import streamlit as st
 from requests import Response
 
-VERSION = "0.8.1"
+VERSION = "0.9.0"
 TITLE = "🏒💬 IIHF (Ice-Hockey) Rulebot"
-URL = "https://ice-hockey-rulebot-d4e727a4fff5.herokuapp.com"
-# URL = "http://localhost:8000"
-CHAT_ENDPOINT = "context/chat/completions"
+API_URL = "https://ice-hockey-rulebot-d4e727a4fff5.herokuapp.com"
+# API_URL = "http://localhost:8000"
+API_ENDPOINT = "context/chat/completions"
 INITIAL_MESSAGE = f"I am ready to assist you in understanding the IIHF 2023/24 rule- and situation books!"
 
 
@@ -64,10 +64,16 @@ with st.sidebar:
         )
     )
     llm_model = st.selectbox(
-        label="Choose an LLM model",
-        options=("gpt-4-turbo-2024-04-09", "gpt-4o-2024-05-13", "gpt-3.5-turbo-0125"),
+        label="Choose an LLM",
+        options=(
+            "gpt-4o-2024-08-06",
+            "gpt-4o-mini-2024-07-18",
+            # "o1-preview-2024-09-12",  # Not available yet in my tier
+            # "o1-mini-2024-09-12",  # Not available yet in my tier
+            "gpt-4-turbo-2024-04-09",
+        ),
         index=0,
-        help="Choose an LLM (gpt-4x models generally produce better results than gpt-3x models, but cost more)"
+        help="Choose an LLM (mini models are quicker and cheaper to use, but their results may not be as reliable)"
     )
     top_k_rules = st.select_slider(
         label="Number of rules matches to interpret",
@@ -92,11 +98,11 @@ for message in st.session_state.messages:
         st.write(message["content"])
 
 
-# Function for generating LLaMA2 response. Refactored from https://github.com/a16z-infra/llama2-chatbot
+# Function for pull LLM response. Refactored from https://github.com/a16z-infra/llama2-chatbot
 def pull_response(query: str) -> Response:
     """Reponse data is a chat completion containing a role and content."""
     return requests.post(
-        url=f"{URL}/{CHAT_ENDPOINT}",
+        url=f"{API_URL}/{API_ENDPOINT}",
         headers=dict(access_token=api_key),
         params=dict(
             query=query,
